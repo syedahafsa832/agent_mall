@@ -2,7 +2,8 @@
 
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { apiGet, apiPost, ApiError } from "@/lib/api";
+import { apiGet, apiPost, apiDelete, ApiError } from "@/lib/api";
+import { IconBookmark } from "@/lib/icons";
 import type { ApprovalRow, AuctionBidRow, AuctionEstimate, AuctionSettlementRow, PublicAuction } from "@/lib/types";
 import { VisitMerchantButton } from "../../_components/visit-merchant-button";
 
@@ -30,6 +31,27 @@ export default function AuctionDetailPage() {
   const [actionBusy, setActionBusy] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const [actionResult, setActionResult] = useState<string | null>(null);
+  const [saved, setSaved] = useState(false);
+  const [savedId, setSavedId] = useState<string | null>(null);
+  const [saveBusy, setSaveBusy] = useState(false);
+
+  async function toggleSave() {
+    if (!auction) return;
+    setSaveBusy(true);
+    try {
+      if (saved && savedId) {
+        await apiDelete(`/api/profile/saved-auctions/${savedId}`);
+        setSaved(false); setSavedId(null);
+      } else {
+        const res = await apiPost<{ saved: { id: string } }>("/api/profile/saved-auctions", { auctionId: auction.id });
+        setSaved(true); setSavedId(res.saved.id);
+      }
+    } catch {
+      // Not signed in, or already saved — either way, nothing to recover from silently.
+    } finally {
+      setSaveBusy(false);
+    }
+  }
 
   async function load() {
     try {
@@ -153,9 +175,12 @@ export default function AuctionDetailPage() {
       <div>
         <p className="am-product-merchant" style={{ fontSize: 13 }}>{auction.merchant.name}</p>
         <h1 style={{ fontSize: 26, margin: "4px 0 12px" }}>{auction.title}</h1>
-        <div className="am-row" style={{ marginBottom: 16 }}>
+        <div className="am-row" style={{ marginBottom: 16, alignItems: "center" }}>
           <span className="am-badge am-badge-neutral">{auction.status}</span>
           {auction.endsAt && <span className="am-help-text">Ends {new Date(auction.endsAt).toLocaleString()}</span>}
+          <button type="button" className="am-btn am-btn-ghost am-btn-sm" onClick={toggleSave} disabled={saveBusy} aria-pressed={saved}>
+            <IconBookmark width={14} height={14} style={saved ? { fill: "currentColor" } : undefined} />{saved ? "Saved" : "Save"}
+          </button>
         </div>
         <p style={{ fontSize: 14, color: "var(--am-text-muted)", marginBottom: 20 }}>{auction.description}</p>
 

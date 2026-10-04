@@ -6,8 +6,8 @@ export type { PublicAuction } from "@/server/auctions/view";
 export type { AuctionEstimate } from "@/server/auctions/service";
 export type { AuctionBidRow, AuctionSettlementRow, AuctionStatus } from "@/server/auctions/types";
 export type { ApprovalRow, ApprovalActionType, ApprovalStatus } from "@/server/approvals/repository";
-export type { MerchantRow, MerchantStatus } from "@/server/merchants/types";
-export type { ProfileRow } from "@/server/profile/repository";
+export type { MerchantRow, MerchantStatus, AuthorizationRow } from "@/server/merchants/types";
+export type { ProfileRow, PaymentMethodRow } from "@/server/profile/repository";
 export type { Requirements } from "@/server/offers/matcher";
 
 export interface NormalizedOffer {

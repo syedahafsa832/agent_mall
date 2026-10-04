@@ -33,6 +33,12 @@ export function TopNav() {
           <Link href="/app/auctions" className={`am-nav-link ${pathname?.startsWith("/app/auctions") ? "active" : ""}`}>
             Auctions
           </Link>
+          <Link href="/app/profile" className={`am-nav-link ${pathname?.startsWith("/app/profile") ? "active" : ""}`}>
+            Profile
+          </Link>
+          <Link href="/merchant" className="am-btn am-btn-primary am-btn-sm" style={{ textDecoration: "none", marginLeft: 4 }}>
+            Sell on Agent Mall
+          </Link>
         </nav>
         <div style={{ position: "relative" }}>
           <button className="am-btn am-btn-ghost" onClick={() => setMenuOpen((v) => !v)} aria-haspopup="true" aria-expanded={menuOpen}>

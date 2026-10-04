@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { apiGet } from "@/lib/api";
 import type { MerchantRow } from "@/lib/types";
+import { IconStore } from "@/lib/icons";
 
 const EXAMPLE_PROMPTS = [
   "Black running shoes under $150 with free shipping",
@@ -72,11 +73,16 @@ export default function AgentMallHome() {
         {stores === null && <p className="am-help-text">Loading connected stores…</p>}
         {stores !== null && stores.length === 0 && <p className="am-help-text">No stores connected yet.</p>}
         {stores !== null && stores.length > 0 && (
-          <div className="am-row" style={{ marginTop: 12 }}>
+          <div className="am-shop-grid" style={{ marginTop: 14 }}>
             {stores.map((s) => (
-              <span key={s.id} className="am-badge am-badge-neutral" style={{ textTransform: "none", fontSize: 13, padding: "8px 14px" }}>
-                {s.name} · {s.category}
-              </span>
+              <button key={s.id} className="am-shop-card" onClick={() => goSearch(s.category)} type="button">
+                <span className="am-feature-icon"><IconStore width={18} height={18} /></span>
+                <span className="am-shop-card-body">
+                  <span className="am-shop-card-name">{s.name}</span>
+                  <span className="am-shop-card-category">{s.category}</span>
+                </span>
+                <span className="am-badge am-badge-success">Connected</span>
+              </button>
             ))}
           </div>
         )}
