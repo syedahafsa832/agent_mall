@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { apiGet, ApiError } from "@/lib/api";
 import type { MerchantRow } from "@/lib/types";
-import { IconChart, IconGavel, IconTag } from "@/lib/icons";
+import { IconChart, IconGavel, IconGlobe, IconSearch, IconStore, IconTag } from "@/lib/icons";
 
 interface CriterionCount { criterion: string; count: number }
 interface MerchantAnalytics {
@@ -113,13 +113,26 @@ export default function MerchantAnalyticsPage() {
 
       {analytics && (
         <>
-          <div className="am-stat-grid" style={{ marginBottom: 20 }}>
-            <div className="am-stat-card"><div className="am-stat-label">Searches</div><div className="am-stat-value">{analytics.searches}</div></div>
-            <div className="am-stat-card"><div className="am-stat-label">Product views</div><div className="am-stat-value">{analytics.productViews}</div></div>
-            <div className="am-stat-card"><div className="am-stat-label">Unique visits</div><div className="am-stat-value">{analytics.uniqueVisits}</div></div>
-            <div className="am-stat-card">
-              <div className="am-stat-label">Checkout abandonment</div>
-              <div className="am-stat-value">{analytics.checkoutsStarted > 0 ? `${Math.round((analytics.checkoutsAbandoned / analytics.checkoutsStarted) * 100)}%` : "—"}</div>
+          <div className="am-stat2-grid" style={{ marginBottom: 20 }}>
+            <div className="am-stat2-card">
+              <div className="am-stat2-head"><span className="am-stat2-icon"><IconSearch width={15} height={15} /></span></div>
+              <div className="am-stat2-value">{analytics.searches}</div>
+              <div className="am-stat2-label">Searches</div>
+            </div>
+            <div className="am-stat2-card">
+              <div className="am-stat2-head"><span className="am-stat2-icon"><IconStore width={15} height={15} /></span></div>
+              <div className="am-stat2-value">{analytics.productViews}</div>
+              <div className="am-stat2-label">Product views</div>
+            </div>
+            <div className="am-stat2-card">
+              <div className="am-stat2-head"><span className="am-stat2-icon"><IconGlobe width={15} height={15} /></span></div>
+              <div className="am-stat2-value">{analytics.uniqueVisits}</div>
+              <div className="am-stat2-label">Unique visits</div>
+            </div>
+            <div className="am-stat2-card">
+              <div className="am-stat2-head"><span className="am-stat2-icon"><IconTag width={15} height={15} /></span></div>
+              <div className="am-stat2-value">{analytics.checkoutsStarted > 0 ? `${Math.round((analytics.checkoutsAbandoned / analytics.checkoutsStarted) * 100)}%` : "—"}</div>
+              <div className="am-stat2-label">Checkout abandonment</div>
             </div>
           </div>
 

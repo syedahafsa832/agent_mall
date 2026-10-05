@@ -3,7 +3,7 @@
 import { useEffect, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
-import { TopNav } from "../app/_components/top-nav";
+import { AdminSidebar, AdminTopbar } from "./_components/admin-sidebar";
 
 export default function MerchantLayout({ children }: { children: ReactNode }) {
   const { status } = useAuth();
@@ -22,9 +22,12 @@ export default function MerchantLayout({ children }: { children: ReactNode }) {
   }
 
   return (
-    <>
-      <TopNav />
-      <main className="am-container am-page">{children}</main>
-    </>
+    <div className="am-admin-shell">
+      <AdminSidebar />
+      <div className="am-admin-main">
+        <AdminTopbar title="Merchant" />
+        <main className="am-admin-content">{children}</main>
+      </div>
+    </div>
   );
 }

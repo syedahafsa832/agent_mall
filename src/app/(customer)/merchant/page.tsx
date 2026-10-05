@@ -7,7 +7,7 @@ import { useAuth } from "@/lib/auth-context";
 import { apiGet } from "@/lib/api";
 import type { AuthorizationRow, MerchantRow } from "@/lib/types";
 import {
-  IconArrowRight, IconBolt, IconCart, IconCheck, IconCompass, IconGlobe, IconSearch, IconShield, IconStore, IconTag, IconX,
+  IconArrowRight, IconBolt, IconCart, IconChart, IconCheck, IconCompass, IconGavel, IconGlobe, IconSearch, IconShield, IconStore, IconTag, IconX,
 } from "@/lib/icons";
 import { getStoreBrand } from "@/lib/store-brand";
 import { KeywordManager } from "./_components/keyword-manager";
@@ -39,6 +39,8 @@ export default function MerchantDashboardPage() {
   const [authorization, setAuthorization] = useState<AuthorizationRow | null>(null);
   const [productCount, setProductCount] = useState<number | null | "unavailable">(null);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [analytics, setAnalytics] = useState<{ searches: number; productsMatched: number; productsCompared: number; merchantInteractions: number; productViews: number; checkoutsStarted: number } | null>(null);
+  const [visitUsage, setVisitUsage] = useState<{ used: number; limit: number } | null>(null);
 
   useEffect(() => {
     apiGet<{ merchants: MerchantRow[] }>("/api/merchants")
@@ -57,6 +59,10 @@ export default function MerchantDashboardPage() {
         apiGet<{ count: number; synced?: boolean }>(`/api/merchants/${activeId}/products`)
           .then((r) => setProductCount(r.synced === false ? "unavailable" : r.count))
           .catch(() => setProductCount("unavailable"));
+        apiGet(`/api/merchants/${activeId}/analytics`).then((r) => setAnalytics(r as typeof analytics)).catch(() => {});
+        apiGet<{ packages: { visit_limit: number; visits_used: number; status: string }[] }>(`/api/merchants/${activeId}/visit-packages`)
+          .then((r) => { const p = r.packages[0]; setVisitUsage(p ? { used: p.visits_used, limit: p.visit_limit } : null); })
+          .catch(() => {});
       })
       .catch(() => setLoadError("Couldn't load this merchant."));
   }, [activeId]);
@@ -109,26 +115,61 @@ export default function MerchantDashboardPage() {
               <Link href={`/merchant/analytics?id=${merchant.id}`} className="am-btn am-btn-secondary am-btn-sm" style={{ textDecoration: "none" }}>View analytics</Link>
             </div>
 
-            <div className="am-stat-grid">
-              <div className="am-stat-card">
-                <div className="am-stat-label">Products</div>
-                <div className="am-stat-value">{productCount === "unavailable" || productCount === null ? "—" : productCount}</div>
-                {productCount === "unavailable" && <div className="am-stat-trend">Not synced yet</div>}
+            <div className="am-stat2-grid">
+              <div className="am-stat2-card">
+                <div className="am-stat2-head"><span className="am-stat2-icon"><IconStore width={15} height={15} /></span></div>
+                <div className="am-stat2-value">{productCount === "unavailable" || productCount === null ? "—" : productCount}</div>
+                <div className="am-stat2-label">{productCount === "unavailable" ? "Products — not synced yet" : "Products"}</div>
               </div>
-              <div className="am-stat-card">
-                <div className="am-stat-label">Category</div>
-                <div className="am-stat-value" style={{ fontSize: 15 }}>{merchant.category}</div>
+              <div className="am-stat2-card">
+                <div className="am-stat2-head"><span className="am-stat2-icon"><IconSearch width={15} height={15} /></span></div>
+                <div className="am-stat2-value">{analytics ? analytics.searches : "—"}</div>
+                <div className="am-stat2-label">Searches that matched</div>
               </div>
-              <div className="am-stat-card">
-                <div className="am-stat-label">Connector</div>
-                <div className="am-stat-value" style={{ fontSize: 15, textTransform: "uppercase" }}>{merchant.connector_type}</div>
+              <div className="am-stat2-card">
+                <div className="am-stat2-head"><span className="am-stat2-icon"><IconGlobe width={15} height={15} /></span></div>
+                <div className="am-stat2-value">{visitUsage ? visitUsage.used : 0}</div>
+                <div className="am-stat2-label">Unique visits{visitUsage ? ` of ${visitUsage.limit}` : ""}</div>
               </div>
-              <div className="am-stat-card">
-                <div className="am-stat-label">Permissions granted</div>
-                <div className="am-stat-value">{authorization?.scopes.length ?? 0}</div>
+              <div className="am-stat2-card">
+                <div className="am-stat2-head"><span className="am-stat2-icon"><IconShield width={15} height={15} /></span></div>
+                <div className="am-stat2-value">{authorization?.scopes.length ?? 0}</div>
+                <div className="am-stat2-label">Permissions granted</div>
               </div>
             </div>
           </section>
+
+          {analytics && (
+            <section className="am-chart-card" style={{ marginBottom: 20 }}>
+              <div className="am-row-between">
+                <h2 className="am-modal-title" style={{ marginBottom: 0, display: "flex", alignItems: "center", gap: 7 }}><IconChart width={16} height={16} />Shopping journey</h2>
+                <Link href={`/merchant/analytics?id=${merchant.id}`} className="am-help-text" style={{ textDecoration: "none" }}>Full analytics →</Link>
+              </div>
+              <p className="am-auth-subtitle" style={{ marginBottom: 0 }}>Real agent activity on your store — nothing here is simulated.</p>
+              {(() => {
+                const steps: { label: string; value: number; icon: typeof IconSearch }[] = [
+                  { label: "Searched", value: analytics.searches, icon: IconSearch },
+                  { label: "Matched", value: analytics.productsMatched, icon: IconCheck },
+                  { label: "Compared", value: analytics.productsCompared, icon: IconTag },
+                  { label: "Visited", value: analytics.merchantInteractions, icon: IconGlobe },
+                  { label: "Viewed", value: analytics.productViews, icon: IconStore },
+                  { label: "Checkout", value: analytics.checkoutsStarted, icon: IconCart },
+                ];
+                const max = Math.max(...steps.map((s) => s.value), 1);
+                return (
+                  <div className="am-chart-bars">
+                    {steps.map((s) => (
+                      <div className="am-chart-bar-col" key={s.label}>
+                        <span className="am-chart-bar-value">{s.value}</span>
+                        <div className="am-chart-bar" style={{ height: `${Math.max((s.value / max) * 100, s.value > 0 ? 6 : 2)}%` }} />
+                        <span className="am-chart-bar-label">{s.label}</span>
+                      </div>
+                    ))}
+                  </div>
+                );
+              })()}
+            </section>
+          )}
 
           <div style={{ marginBottom: 20 }}>
             <PoliciesCard merchantId={merchant.id} />
