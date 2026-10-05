@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { apiGet, ApiError } from "@/lib/api";
 import type { PublicAuction } from "@/lib/types";
+import { IconGavel, IconSearch } from "@/lib/icons";
 
 function auctionImage(id: string) {
   return `https://picsum.photos/seed/${encodeURIComponent(`auction-${id}`)}/480/480`;
@@ -50,7 +51,10 @@ export default function AuctionsPage() {
         className="am-row"
         style={{ marginBottom: 24 }}
       >
-        <input className="am-input" style={{ maxWidth: 320 }} placeholder="Search auctions" value={query} onChange={(e) => setQuery(e.target.value)} />
+        <div className="am-input-icon-wrap" style={{ maxWidth: 320 }}>
+          <span className="am-input-icon-left"><IconSearch width={15} height={15} /></span>
+          <input className="am-input" placeholder="Search auctions" value={query} onChange={(e) => setQuery(e.target.value)} />
+        </div>
         <label className="am-help-text" style={{ display: "flex", alignItems: "center", gap: 6 }}>
           <input type="checkbox" checked={onlyOpen} onChange={(e) => setOnlyOpen(e.target.checked)} />
           Open only
@@ -60,7 +64,12 @@ export default function AuctionsPage() {
 
       {error && <p className="am-error-text">{error}</p>}
       {auctions === null && !error && <p className="am-help-text">Loading auctions…</p>}
-      {auctions !== null && auctions.length === 0 && <p className="am-empty">No auctions match that filter.</p>}
+      {auctions !== null && auctions.length === 0 && (
+        <div className="am-empty" style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10 }}>
+          <span className="am-feature-icon"><IconGavel width={18} height={18} /></span>
+          No auctions match that filter.
+        </div>
+      )}
 
       <div className="am-grid">
         {auctions?.map((a) => (

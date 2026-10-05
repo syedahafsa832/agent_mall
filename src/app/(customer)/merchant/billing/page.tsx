@@ -91,18 +91,24 @@ export default function BillingDemoPage() {
     seedOrder("nyc");
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  async function processPayment() {
+  async function processPayment(simulateDecline = false) {
     if (!order) return;
     setBusy("pay"); setError(null); setVisibleEvents([]);
     try {
-      const res = await apiPost<{ payment: Payment; events: PaymentEvent[]; order: Order }>(`/api/demo/checkout/orders/${order.id}/pay`);
+      const res = await apiPost<{ payment: Payment; events: PaymentEvent[]; order: Order }>(`/api/demo/checkout/orders/${order.id}/pay`, {
+        paymentMethodToken: simulateDecline ? "demo-decline" : undefined,
+      });
       setOrder(res.order);
       // Animate through the real recorded steps rather than dumping them all at once.
       for (let i = 0; i < res.events.length; i++) {
         await new Promise((r) => setTimeout(r, 260));
         setVisibleEvents((v) => [...v, res.events[i]!]);
       }
-      setPayment(res.payment);
+      if (res.payment.status === "failed") {
+        setError("Payment declined by the payment provider (simulated).");
+      } else {
+        setPayment(res.payment);
+      }
       loadAnalytics().catch(() => {});
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Payment failed.");
@@ -185,9 +191,14 @@ export default function BillingDemoPage() {
               {error && <p className="am-error-text" role="alert" style={{ marginTop: 10 }}>{error}</p>}
 
               {!payment && (
-                <button className="am-btn am-btn-primary am-btn-block" style={{ marginTop: 16 }} onClick={processPayment} disabled={!!busy || order.status === "paid"}>
-                  {busy === "pay" ? <span className="am-spinner" /> : order.status === "paid" ? "Already paid" : "Process payment"}
-                </button>
+                <div style={{ marginTop: 16, display: "flex", gap: 8 }}>
+                  <button className="am-btn am-btn-primary" style={{ flex: 1 }} onClick={() => processPayment(false)} disabled={!!busy || order.status === "paid"}>
+                    {busy === "pay" ? <span className="am-spinner" /> : order.status === "paid" ? "Already paid" : "Process payment"}
+                  </button>
+                  <button className="am-btn am-btn-secondary am-btn-sm" onClick={() => processPayment(true)} disabled={!!busy || order.status === "paid"} title="Routes through the same decline path a real card decline would take">
+                    Simulate decline
+                  </button>
+                </div>
               )}
             </>
           )}

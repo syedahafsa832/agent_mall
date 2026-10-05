@@ -9,6 +9,7 @@ import type { AuthorizationRow, MerchantRow } from "@/lib/types";
 import {
   IconArrowRight, IconBolt, IconCart, IconCheck, IconCompass, IconGlobe, IconSearch, IconShield, IconStore, IconTag, IconX,
 } from "@/lib/icons";
+import { getStoreBrand } from "@/lib/store-brand";
 import { KeywordManager } from "./_components/keyword-manager";
 import { VisitPackagesCard } from "./_components/visit-packages-card";
 import { PoliciesCard } from "./_components/policies-card";
@@ -97,7 +98,7 @@ export default function MerchantDashboardPage() {
         <>
           <section className="am-card" style={{ marginBottom: 20 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 18, flexWrap: "wrap" }}>
-              <span className="am-feature-icon"><IconStore width={20} height={20} /></span>
+              {(() => { const brand = getStoreBrand(merchant.slug); const Icon = brand.icon; return <span className="am-feature-icon" style={{ background: brand.bg, color: brand.color }}><Icon width={20} height={20} /></span>; })()}
               <div style={{ flex: 1, minWidth: 180 }}>
                 <div style={{ fontWeight: 700, fontSize: 17 }}>{merchant.name}</div>
                 <div style={{ fontSize: 13, color: "var(--am-text-muted)", display: "flex", alignItems: "center", gap: 5 }}>

@@ -113,6 +113,12 @@ export const IconAlert = (p: IconProps) => (
 export const IconReceipt = (p: IconProps) => (
   <svg {...base(p)}><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3Z" /><path d="M9 8h6M9 12h6" /></svg>
 );
+export const IconBike = (p: IconProps) => (
+  <svg {...base(p)}><circle cx="6" cy="17" r="3.5" /><circle cx="18" cy="17" r="3.5" /><path d="M6 17 10 8h4l3 5M10 8 8 5h3m-1 12 4-9" /></svg>
+);
+export const IconShirt = (p: IconProps) => (
+  <svg {...base(p)}><path d="M8 4 4 7l2 3 2-1.3V20h8V8.7L18 10l2-3-4-3-2 2h-4L8 4Z" /></svg>
+);
 export const IconRefresh = (p: IconProps) => (
   <svg {...base(p)}><path d="M3 12a9 9 0 0 1 15.3-6.3L21 8M21 3v5h-5" /><path d="M21 12a9 9 0 0 1-15.3 6.3L3 16M3 21v-5h5" /></svg>
 );

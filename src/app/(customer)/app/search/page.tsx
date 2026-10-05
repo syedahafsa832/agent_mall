@@ -8,6 +8,7 @@ import Link from "next/link";
 import { ProductCard } from "../_components/product-card";
 import { AgentTrace, type TraceStep } from "../_components/agent-trace";
 import { ComparisonTable } from "../_components/comparison-table";
+import { IconSearch, IconTag } from "@/lib/icons";
 
 interface Filters {
   maxPrice?: number;
@@ -131,7 +132,7 @@ export default function SearchPage() {
       <h1 className="am-auth-title" style={{ marginBottom: 20 }}>Search</h1>
 
       <div className="am-card" style={{ marginBottom: 20 }}>
-        <p className="am-section-title" style={{ marginBottom: 10 }}>Refine</p>
+        <p className="am-section-title" style={{ marginBottom: 10, display: "flex", alignItems: "center", gap: 6 }}><IconTag width={13} height={13} />Refine</p>
         <div className="am-row">
           <div className="am-field" style={{ marginBottom: 0, width: 130 }}>
             <label className="am-label">Max price</label>
@@ -179,8 +180,10 @@ export default function SearchPage() {
         {turns.map((turn) => {
           if (turn.role === "user") {
             return (
-              <div key={turn.id} className="am-row-between" style={{ background: "var(--am-surface-muted)", borderRadius: 12, padding: "10px 16px" }}>
-                <strong style={{ fontSize: 14 }}>{turn.text}</strong>
+              <div key={turn.id} style={{ display: "flex", justifyContent: "flex-end" }}>
+                <div style={{ background: "var(--am-accent)", color: "#fff", borderRadius: "14px 14px 2px 14px", padding: "10px 16px", maxWidth: "80%" }}>
+                  <strong style={{ fontSize: 14, fontWeight: 600 }}>{turn.text}</strong>
+                </div>
               </div>
             );
           }
@@ -244,7 +247,10 @@ export default function SearchPage() {
         {loading && <AgentTrace steps={trace} />}
 
         {turns.length === 0 && !loading && (
-          <p className="am-empty">Ask your agent what you're looking for below.</p>
+          <div className="am-empty" style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10 }}>
+            <span className="am-feature-icon"><IconSearch width={18} height={18} /></span>
+            Ask your agent what you&apos;re looking for below.
+          </div>
         )}
       </div>
 
