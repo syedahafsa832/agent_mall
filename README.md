@@ -1,35 +1,21 @@
-# Agentic Commerce (POC)
+# Agent Mall — Frontend
 
-One capability contract over heterogeneous merchant integrations (REST, MCP, structured web data), used by a single shopping agent. Includes domain verification, scoped authorization, a policy boundary against high-risk actions, referral attribution and tenant-isolated merchant insight. Next.js + PostgreSQL.
+Customer-facing Next.js frontend for the Agent Mall shopping agent: search, compare, auctions, merchant dashboard, auth, and profile. Talks to the backend over HTTP — no server logic or database access lives here.
 
-See `docs/ARCHITECTURE.md`, `docs/POC_SCOPE.md`, `docs/CONNECTION_PROTOTYPE.md`.
+Backend: https://github.com/syedahafsa12/backend_agentic_mall
 
 ## Run locally
 
 ```bash
 npm install
-cp .env.example .env     # fill in values
-npm run migrate && npm run seed
-npm run dev              # http://localhost:3000  (/connect, /demo-store)
-npm test
+cp .env.example .env     # point NEXT_PUBLIC_API_BASE_URL at a running backend
+npm run dev              # http://localhost:3000
 ```
 
 ## Environment variables
 
 | Variable | Required | Value |
 |---|---|---|
-| `DATABASE_URL` | yes | Postgres URI (e.g. Supabase pooler) |
-| `APP_BASE_URL` | yes | Public URL of the deployed app, no trailing slash |
-| `MODEL_PROVIDER` | yes | `anthropic` |
-| `ANTHROPIC_API_KEY` | yes | your key |
-| `ANTHROPIC_MODEL` | no | `claude-sonnet-5-5` |
-| `MISTRAL_API_KEY` | for `/connect` agent | your key |
-| `MISTRAL_MODEL` | no | `mistral-medium-latest` |
-| `CONNECT_SECRET` | yes in prod | random string: `openssl rand -hex 32` |
-| `REFERRAL_SIGNING_SECRET` | yes in prod | random string: `openssl rand -hex 32` |
-| `NEXT_PUBLIC_LUNA_URL` | no | same as `APP_BASE_URL` + `/demo-store`, or empty |
-| `MERCHANT_B_MCP_COMMAND` | no | `npx` |
-| `MERCHANT_B_MCP_ARGS` | no | `tsx,scripts/mcp-servers/merchant-b-server.ts` |
-| `CONNECT_ALLOW_LOCAL` | dev only | leave empty in production |
+| `NEXT_PUBLIC_API_BASE_URL` | yes | Base URL of the backend API, e.g. `http://localhost:4000` |
 
-Never commit `.env`; it is gitignored. Run `npm run migrate` once against the production database.
+Never commit `.env`; it is gitignored.

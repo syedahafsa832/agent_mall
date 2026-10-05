@@ -1,10 +1,4 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {
-  async rewrites() {
-    return [
-      { source: "/.well-known/agentic-commerce/:slug", destination: "/api/well-known/agentic-commerce/:slug" },
-    ];
-  },
-};
+const nextConfig = {};
 
 export default nextConfig;

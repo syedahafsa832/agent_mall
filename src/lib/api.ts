@@ -17,13 +17,15 @@ export class ApiError extends Error {
  * backend, so we just clear the stale session and let the caller redirect to
  * /login rather than silently failing.
  */
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
+
 export async function apiFetch<T>(path: string, opts: RequestInit = {}): Promise<T> {
   const session = loadSession();
   const headers = new Headers(opts.headers);
   headers.set("content-type", "application/json");
   if (session) headers.set("authorization", `Bearer ${session.accessToken}`);
 
-  const res = await fetch(path, { ...opts, headers });
+  const res = await fetch(`${API_BASE_URL}${path}`, { ...opts, headers });
   const isJson = res.headers.get("content-type")?.includes("application/json");
   const body = isJson ? await res.json().catch(() => null) : null;
 
